@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+{% load static %}
 <head>
 {% block meta %}
 <meta charset="UTF-8">
@@ -8,37 +9,60 @@
 <meta name="Description" content="A juicy website"/>
 {% endblock %}
 
+{% block fonts %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orelega+One&display=swap" rel="stylesheet">
+{% endblock %}
+
 {% block css %}
+<link rel="stylesheet" href="https://fonts.sandbox.google.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.0/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="{% static 'css/base.css' %}">
 {% endblock %}
 <title>Liase Smart | {% block title %}{% endblock %}</title>
 </head>
 <body>
     <!-- Navbar -->
     {% block navbar %}
-    <nav class="home-navbar" id="home-navbar">
-        <div class="w-100 p-2">
-            <div class="container-fluid p-4">
-                <div class="row">
-                    <div class="col-2"><a class="icon" href="#">Home</a></div>
-                    <div class="col-6">
-                        <ul class="list-inline">
-                            <li class="list-inline-item pr-2"><a>How it works</a></li>
-                            <li class="list-inline-item"><a>Request a demo</a></li>
-                            <li class="list-inline-item"><a>How it works</a></li>
-                        </ul>
-                    </div>
-                    <div class="col-4">
-                        <ul class="list-inline">
-                            <li class="list-inline-item">Testing</li>
-                        </ul>
-                    </div>
+    <nav id="home-navbar" id="home-navbar">
+        <div class="row">
+            <div class="col-2">
+                <div id="logo">
+                    <a href="">Logo</a>
                 </div>
             </div>
-            
+            <div class="col-7">
+                <div class="text-center">
+                    <ul class="list-inline">
+                        <li class="list-inline-item mr-2">
+                            <a class="" href="">Services</a>
+                        </li>
+                        <li class="list-inline-item mr-2">
+                            <a class="" href="">Meet the team</a>
+                        </li>
+                        <li class="list-inline-item mr-2">
+                            <a class="" href="">Contact Us</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="text-center">
+                    <ul class="list-inline">
+                        <li class="list-inline-item m-1">
+                            <a href="#">Login</a>
+                        </li>
+                        <li class="list-inline-item m-1">
+                            <a class="btn btn-sm btn-success" href="">Book a demo</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
+        
     </nav>
     {% endblock %}
 
