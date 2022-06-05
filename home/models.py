@@ -20,7 +20,7 @@ class SiteErrors(models.Model):
     error_message = models.CharField(max_length=255)
 
 
-class LockingManager(models.Manager):
+# class LockingManager(models.Manager):
     """ Add lock/unlock functionality to manager.
 
     Example::
@@ -52,56 +52,56 @@ class LockingManager(models.Manager):
 
     """
 
-    def lock(self):
-        """ Lock table.
+    # def lock(self):
+    #     """ Lock table.
 
-        Locks the object model table so that atomic update is possible.
-        Simulatenous database access request pend until the lock is unlock()'ed.
+    #     Locks the object model table so that atomic update is possible.
+    #     Simulatenous database access request pend until the lock is unlock()'ed.
 
-        Note: If you need to lock multiple tables, you need to do lock them
-        all in one SQL clause and this function is not enough. To avoid
-        dead lock, all tables must be locked in the same order.
+    #     Note: If you need to lock multiple tables, you need to do lock them
+    #     all in one SQL clause and this function is not enough. To avoid
+    #     dead lock, all tables must be locked in the same order.
 
-        See http://dev.mysql.com/doc/refman/5.0/en/lock-tables.html
-        """
-        cursor = connection.cursor()
-        table = self.model._meta.db_table
-        logger.debug("Locking table %s" % table)
-        cursor.execute("LOCK TABLES %s WRITE" % table)
-        row = cursor.fetchone()
-        return row
+    #     See http://dev.mysql.com/doc/refman/5.0/en/lock-tables.html
+    #     """
+    #     cursor = connection.cursor()
+    #     table = self.model._meta.db_table
+    #     logger.debug("Locking table %s" % table)
+    #     cursor.execute("LOCK TABLES %s WRITE" % table)
+    #     row = cursor.fetchone()
+    #     return row
 
-    def unlock(self):
-        """ Unlock the table. """
-        cursor = connection.cursor()
-        table = self.model._meta.db_table
-        cursor.execute("UNLOCK TABLES")
-        row = cursor.fetchone()
-        return row
+    # def unlock(self):
+    #     """ Unlock the table. """
+    #     cursor = connection.cursor()
+    #     table = self.model._meta.db_table
+    #     cursor.execute("UNLOCK TABLES")
+    #     row = cursor.fetchone()
+    #     return row
 
 
 # Tracks site visit numbers
 class SiteVisits(models.Model):
     ''' A table to track site visit numbers '''
-    manager = LockingManager()
+    # manager = LockingManager()
 
-    @staticmethod
-      def do_atomic_update()
-          ''' Updates job integer, keeping it below 5 '''
-           try:
-                # Ensure only one HTTP request can do this update at once.
-                Job.objects.lock()
+    # @staticmethod
+    #   def do_atomic_update()
+    #       ''' Updates job integer, keeping it below 5 '''
+    #        try:
+    #             # Ensure only one HTTP request can do this update at once.
+    #             Job.objects.lock()
 
-                job = Job.object.get(id=)
-                # If we don't lock the tables two simultanous
-                # requests might both increase the counter
-                # going over 5
-                if job.counter < 5:
-                    job.counter += 1
-                    job.save()
+    #             job = Job.object.get(id=)
+    #             # If we don't lock the tables two simultanous
+    #             # requests might both increase the counter
+    #             # going over 5
+    #             if job.counter < 5:
+    #                 job.counter += 1
+    #                 job.save()
 
-            finally:
-                Job.objects.unlock()
+    #         finally:
+    #             Job.objects.unlock()
 
     date = models.DateField()
     site_visits = models.BigIntegerField()

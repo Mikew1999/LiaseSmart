@@ -21,9 +21,9 @@ def index(request):
     today = date.today()
     ip_addresses = SiteVisits.objects.all()
     users_ip = find_ip(request)
+    print(users_ip)
 
     if users_ip not in ip_addresses:
         SiteVisits(date=today, site_visits='')
 
-    if 
     return render(request, 'home/index.html')

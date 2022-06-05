@@ -1,11 +1,27 @@
 #home-navbar {
     min-height: 5rem;
     border-bottom: 1.5px solid black;
-}
-
-#home-navbar {
+    position:sticky;
+    top: 0;
     padding-top: 1rem;
     padding-left: 1rem;
+    background-color: rgb(244, 243, 243);
+}
+
+#logo-container {
+    padding-left: 1rem;
+    height: 40px;
+    width: 60px;
+}
+
+#logo {
+    height: 40px;
+    width: 100px;
+}
+
+#main-bg-img {
+    background-image: url('first_header_img.jpg');
+    z-index: 100;
 }
 
 .mr-2 {
