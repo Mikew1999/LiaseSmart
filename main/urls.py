@@ -1,4 +1,4 @@
-''' Url mapping for home module '''
+''' Url mapping for main web app '''
 from django.urls import path
 
 from . import views
