@@ -7,25 +7,34 @@ import mysql.connector
 
 def login(form):
     ''' Function to handle login requests '''
-    cnx = mysql.connector.connect(user=os.environ['db_username'],
-                                  password=os.environ['db_pass'],
-                                  host='localhost',
-                                  database='liaisesmart')
+    try:
+        cnx = mysql.connector.connect(user=os.environ['db_username'],
+                                      password=os.environ['db_pass'],
+                                      host='localhost',
+                                      database='liaisesmart')
 
-    cursor = cnx.cursor()
+        cursor = cnx.cursor()
 
-    query = ("SELECT user_id, user_type, username, aes_decrypt(enc_pw, %s) as 'password' FROM user_login_details"
-             "WHERE username = %s")
+        query = ("SELECT user_id, user_type, username,"
+                 "aes_decrypt(enc_pw, %s) as 'password'"
+                 "FROM user_login_details"
+                 "WHERE username = %s")
 
-    cursor.execute(query, (os.environ['db_encryption_key'], form.username))
+        cursor.execute(query, (os.environ['db_encryption_key'], form.username))
 
-    for user in cursor:
-        print(
-                f'User: {user.user_id}, user type: {user.user_type},'
-                f'username: {user.username}, password: {user.password}'
-            )
+        for user in cursor:
+            user_details = {
+                'user_id': user.user_id,
+                'username': user.username,
+                'password': user.password,
+                'user_type': user.user_type
+            }
 
-    cursor.close()
-    cnx.close()
+        cursor.close()
+        cnx.close()
 
-    return
+    except mysql.connector.Error as err:
+        user_details = {}
+        print(f'Something went wrong: {err}')
+
+    return user_details
