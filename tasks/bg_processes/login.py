@@ -13,24 +13,48 @@ def login(form):
                                       host='localhost',
                                       database='liaisesmart')
 
-        cursor = cnx.cursor()
+        with cnx.cursor() as cursor:
+            query = ("SELECT user_id, user_type, username,"
+                     "aes_decrypt(enc_pw, %s) as 'password',"
+                     "active, activation_code, activation_expiry,"
+                     "locked, locked_until, two_fa, two_fa_mode,"
+                     "two_fa_expiry, login_attempts, email_addr, phone_num"
+                     "FROM user_login_details"
+                     "WHERE username = %s")
 
-        query = ("SELECT user_id, user_type, username,"
-                 "aes_decrypt(enc_pw, %s) as 'password'"
-                 "FROM user_login_details"
-                 "WHERE username = %s")
+            cursor.execute(
+                query, (os.environ['db_encryption_key'], form.username))
 
-        cursor.execute(query, (os.environ['db_encryption_key'], form.username))
+            record = cursor.fetchone()
 
-        for user in cursor:
-            user_details = {
-                'user_id': user.user_id,
-                'username': user.username,
-                'password': user.password,
-                'user_type': user.user_type
-            }
+            if record:
+                for (user_id, user_type, username, password,
+                     active, activation_code, activation_expiry,
+                     locked, locked_until, two_fa, two_fa_mode, two_fa_expiry,
+                     login_attempts, email_addr, phone_num) in cursor:
+                    if password == form['password']:
+                        user_details = {
+                            'user_id': user_id,
+                            'username': username,
+                            'password': password,
+                            'user_type': user_type,
+                            'active': active,
+                            'activation_key': activation_code,
+                            'activation_expiry': activation_expiry,
+                            'locked': locked,
+                            'locked_until': locked_until,
+                            'two_fa': two_fa,
+                            'two_fa_mode': two_fa_mode,
+                            'two_fa_expiry': two_fa_expiry,
+                            'login_attempts': login_attempts,
+                            'email_addr': email_addr,
+                            'phone_num': phone_num
+                        }
+                    else:
+                        user_details = {}
+            else:
+                user_details = {}
 
-        cursor.close()
         cnx.close()
 
     except mysql.connector.Error as err:
