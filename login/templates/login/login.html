@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="Description" content="Enter your description here"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link rel="stylesheet" href="{% static 'css/base.css' %}">
+<script src="{% static 'js/main.js' %}"></script>
+<title>Liaise Smart | Login</title>
+</head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.js"></script>
+<script type="text/javascript">
+$(window).load(function() {
+    // Animate loader off screen
+    $(".se-pre-con").fadeOut("slow");;
+});
+</script>
+<body onunload="">
+    <div class="se-pre-con"></div>
+
+    <section class="login-background">
+        
+        <div class="container">
+            <div class="row">
+                <div class="col-4 offset-4">
+                    <img src="#" alt="big logo" id="big-logo">
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <form id="login-form" class="form" method="post">
+                {% csrf_token %}
+                <div class="mb-2">
+                    <label for="username">Username</label><br>
+                    <input type="text" class="form-control" name="username">
+                </div>
+                <div class="mb-2">
+                    <label for="password">Password</label><br>
+                    <input type="password" class="form-control" name="password">
+                </div>
+                <div class="mb-2">
+                    <div class="text-center">
+                        <input type="submit" value="submit" class="btn btn-primary">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+
+</body>
+</html>

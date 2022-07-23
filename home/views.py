@@ -1,6 +1,5 @@
 ''' Home page handling '''
-from datetime import date
-
+from datetime import date, datetime, timedelta
 from django.shortcuts import render
 from .models import SiteActionsTaken, SiteVisits, SiteErrors
 

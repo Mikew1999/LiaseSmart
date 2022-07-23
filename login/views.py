@@ -10,7 +10,6 @@ def login_page(request):
         Renders login page, handles
         login form, cleans data from form
     '''
-    user_type = request.GET.get("user_type", None)
 
     if request.method == 'POST':
         # csrf_token = request.POST['csrf_token']
@@ -26,53 +25,50 @@ def login_page(request):
         # check for user
         check_login = login(form=form)
 
-        # if user found
-        if check_login:
-            # if users account has been deleted
-            # redirect to signup page
-            if check_login['deleted'] == '1':
+        # if error
+        if check_login['error']:
+            the_error = check_login['error']
+            if the_error == 'locked':
+                locked_until = check_login['locked_until']
+                messages.add_message(
+                    request, messages.ERROR,
+                    f'Account locked until {locked_until}'
+                )
+                # redirect to login page
+            elif the_error == 'account not active':
                 messages.add_message(
                     request, messages.INFO,
-                    'Your account is no longer active, please sign up')
-                # add sign up redirect here
+                    'Account has not yet been activated.'
+                    'Please activate your account'
+                )
+                # add redirect to activate page
                 return
-
-            # if users account is active
-            if check_login['active'] == '1':
-                # if account is not locked and is active
-                # redirect to dash home page
-                if check_login['locked'] != '1':
-                    # put redirect to check two fa function here
-                    context = check_login
-                    return context
-                # if users account is locked
-                # redirect to login page and show message
-                else:
-                    locked_until = check_login['locked_until']
+            elif the_error == 'incorrect login':
+                if check_login['attempt']:
+                    attempt = check_login['attempt']
                     messages.add_message(
-                        request, messages.INFO,
-                        'Your account is temporarily locked'
-                        f'please try again in {locked_until}')
-                    return render(request, 'login/artist_login.html')
-            # if users account is not authorised then
-            # redirect to authorise page
+                        request, messages.ERROR,
+                        f'Incorrect login details. Attempt: {attempt}'
+                    )
+                    # add redirect to login page and add message
             else:
-                context = check_login
-                # put redirect to authorise login page here
-                return redirect(request, authorise(request, context=context))
-        # if user not found / incorrect username or password
-        else:
-            # add redirect to relevant login page
-            messages.add_message(request, messages.WARNING,
-                                 'Incorrect username or password')
-            return render(request, 'login/artist_login.html')
+                messages.add_message(
+                    request, messages.ERROR,
+                    'Something went wrong. Please try again later'
+                )
+                # add redirect to login page
 
-    if user_type == '1':
-        return render(request, 'login/artist_login.html')
-    elif user_type == '2':
-        return render(request, 'login/liaison_login.html')
-    else:
-        return render(request, 'login/login_select.html')
+        # if no error redirect to dash function
+        else:
+            user_details = check_login['user_details']
+            messages.add_message(
+                request, messages.SUCCESS,
+                f'Hello! {user_details["username"]}'
+            )
+            # add redirect to dash page
+            return
+
+    return render(request, 'login/login.html')
 
 
 def authorise(request, context):
