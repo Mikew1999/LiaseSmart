@@ -4,7 +4,7 @@ from django.contrib import messages
 from tasks.bg_processes.login import login
 
 
-# Create your views here.
+# Login page and functionality
 def login_page(request):
     '''
         Renders login page, handles
@@ -13,8 +13,8 @@ def login_page(request):
 
     if request.method == 'POST':
         # csrf_token = request.POST['csrf_token']
-        username = str(request.POST['username'])
-        password = str(request.POST['password'])
+        username = request.POST['username']
+        password = request.POST['password']
 
         form = {
             'username': username,
@@ -28,21 +28,32 @@ def login_page(request):
         # if error
         if check_login['error']:
             the_error = check_login['error']
+
+            # if account is locked
             if the_error == 'locked':
                 locked_until = check_login['locked_until']
                 messages.add_message(
                     request, messages.ERROR,
                     f'Account locked until {locked_until}'
                 )
-                # redirect to login page
+
+                # render login page and show message
+                return render(request, 'login/login.html')
+
+            # if account not active
             elif the_error == 'account not active':
                 messages.add_message(
                     request, messages.INFO,
                     'Account has not yet been activated.'
                     'Please activate your account'
                 )
-                # add redirect to activate page
-                return
+
+                context = check_login['user_details']
+
+                # redirect to authorise page
+                return redirect(authorise, context=context)
+
+            # if login details are incorrect
             elif the_error == 'incorrect login':
                 if check_login['attempt']:
                     attempt = check_login['attempt']
@@ -50,13 +61,17 @@ def login_page(request):
                         request, messages.ERROR,
                         f'Incorrect login details. Attempt: {attempt}'
                     )
-                    # add redirect to login page and add message
+                    # render login page and show message
+                    return render(request, 'login/login.html')
+
+            # any sql errors
             else:
                 messages.add_message(
                     request, messages.ERROR,
                     'Something went wrong. Please try again later'
                 )
-                # add redirect to login page
+                # render login page and show message
+                return render(request, 'login/login.html')
 
         # if no error redirect to dash function
         else:
@@ -71,6 +86,29 @@ def login_page(request):
     return render(request, 'login/login.html')
 
 
+# activate account page and functionality
 def authorise(request, context):
-    ''' Authorise account page '''
-    return render(request, 'login/authorise.html', context)
+    ''' Activate account page '''
+    if request.method == 'POST':
+
+        if request.POST['authcode']:
+            if request.POST['authcode'] == context['activation_code']:
+                messages.add_message(
+                    request, messages.SUCCESS,
+                    'Account activated!'
+                )
+                return
+            else:
+                messages.add_message(
+                    request, messages.ERROR,
+                    'Activation code incorrect'
+                )
+                return render(request, 'login/authorise.html', context=context)
+
+        if request.POST['newcode']:
+            sender_email = 'liaisesmartsupport@gmail.com'
+            receiver_email = context['email_addr']
+            # create random passcode
+            
+            email_content = f'Activation code: {activation_code}'
+    return render(request, 'login/authorise.html', context=context)

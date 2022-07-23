@@ -48,24 +48,66 @@ def login(form):
                     if password == form['password']:
                         # if account locked
                         if locked == 1:
+                            # if locked but locked until time has passed
+                            # update locked to 0
+                            if datetime.now() > locked_until:
+                                update_query = (
+                                    "UPDATE user_login_details"
+                                    "SET locked = 0"
+                                    "WHERE user_id = %s"
+                                )
+
+                                cursor.execute(update_query, user_id)
+
+                                user_details = {
+                                    'user_id': user_id,
+                                    'username': username,
+                                    'password': password,
+                                    'user_type': user_type,
+                                    'active': active,
+                                    'activation_key': activation_code,
+                                    'activation_expiry': activation_expiry,
+                                    'locked': locked,
+                                    'locked_until': locked_until,
+                                    'two_fa': two_fa,
+                                    'two_fa_mode': two_fa_mode,
+                                    'two_fa_expiry': two_fa_expiry,
+                                    'login_attempts': login_attempts,
+                                    'email_addr': email_addr,
+                                    'phone_num': phone_num,
+                                    'dash_config': dash_config,
+                                    'calendar_config': calendar_config
+                                }
+                                # if user not active
+                                if active != 1:
+                                    context = {
+                                        'user_details': user_details,
+                                        'error': 'account not active'
+                                    }
+                                # if account active and not locked
+                                else:
+                                    context = {
+                                        'user_details': user_details
+                                    }
                             # add 10 mins to locked time and add error to
                             # user_details dict
-                            locked_until_time = datetime.strptime(
-                                locked_until, date_format)
-                            new_time = locked_until_time + locked_time
+                            else:
+                                locked_until_time = datetime.strptime(
+                                    locked_until, date_format)
+                                new_time = locked_until_time + locked_time
 
-                            update_query = (
-                                "UPDATE user_login_details"
-                                "SET locked_until = %s"
-                                "WHERE user_id = %s"
-                            )
-                            cursor.execute(update_query, (new_time, user_id))
+                                update_query = (
+                                    "UPDATE user_login_details"
+                                    "SET locked_until = %s"
+                                    "WHERE user_id = %s"
+                                )
+                                cursor.execute(update_query, (new_time, user_id))
 
-                            context = {
-                                'user_details': {},
-                                'error': 'locked',
-                                'locked_until': new_time
-                            }
+                                context = {
+                                    'user_details': {},
+                                    'error': 'locked',
+                                    'locked_until': new_time
+                                }
                         # if account not locked
                         else:
                             user_details = {
