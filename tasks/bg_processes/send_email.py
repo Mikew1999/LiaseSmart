@@ -23,9 +23,10 @@ def send_email(email_context):
             server.login("liaisesmartsupport@gmail.com", password)
             server.sendmail(sender_email, receiver_email, message)
 
-        sent_status = 200
+        sent_status = 'yes'
 
     except smtplib.SMTPConnectError as err:
         print(f'Something went wrong {err}')
+        sent_status = 'no'
 
     return sent_status
